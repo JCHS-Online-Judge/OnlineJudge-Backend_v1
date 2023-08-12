@@ -76,6 +76,7 @@ public class WebSecurityConfig {
 				.antMatchers(HttpMethod.PATCH, "/api/problem/").hasRole("ADMIN")
 				.antMatchers(HttpMethod.DELETE, "/api/problem/").hasRole("ADMIN")
 
+				.antMatchers("/api/ws/**").permitAll()
 				.antMatchers(HttpMethod.PUT, "/api/**").authenticated()
 
 				.anyRequest().permitAll();

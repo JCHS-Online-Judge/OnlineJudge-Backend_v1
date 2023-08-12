@@ -24,6 +24,7 @@ public class History {
 	Judge.Language language;
 
 	@NotEmpty
+
 	String source;
 
 	int sourceLength;

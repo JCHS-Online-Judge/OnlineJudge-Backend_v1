@@ -60,6 +60,7 @@ public class Judge {
 
 		public enum Type {
 			WAITING,
+			PROCESSING,
 			COMPILE_ERROR,
 			RUNTIME_ERROR,
 			TIME_LIMIT,

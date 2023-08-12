@@ -59,12 +59,13 @@ public final class JudgeInfo {
 		);
 
 		switch (type) {
-			case WAITING -> mongoManager.getJudgeCollection().updateOne(
+			case PROCESSING -> mongoManager.getJudgeCollection().updateOne(
 					new Document("_id", new ObjectId(judgeId)),
 					new Document("$set", new Document(
 							Map.of("result.time", -1,
 									"result.memory", -1,
-									"result.message", "")))
+									"result.message",
+									"%.0f%%".formatted((((Integer) args[0]).floatValue() / (Integer) args[1])))))
 			);
 			case COMPILE_ERROR, RUNTIME_ERROR -> mongoManager.getJudgeCollection().updateOne(
 					new Document("_id", new ObjectId(judgeId)),
@@ -78,7 +79,7 @@ public final class JudgeInfo {
 			);
 		}
 
-		if (type != ExceptionType.WAITING) {
+		if (type.isExit()) {
 			Runtime.getRuntime().exit(0);
 		}
 	}
@@ -113,7 +114,7 @@ public final class JudgeInfo {
 							TestCase.builder()
 									.input(document.getString("input"))
 									.output(document.getString("output"))
-									.isExample(document.getBoolean("isExample", false))
+									.isExample(document.getBoolean("example", false))
 									.build()
 					);
 				}
@@ -121,13 +122,19 @@ public final class JudgeInfo {
 		}
 	}
 
+	@Getter
+	@RequiredArgsConstructor
 	public enum ExceptionType {
-		WAITING,
-		COMPILE_ERROR,
-		RUNTIME_ERROR,
-		TIME_LIMIT,
-		MEMORY_LIMIT,
-		WRONG_ANSWER,
-		CORRECT
+		WAITING(false),
+		PROCESSING(false),
+		COMPILE_ERROR(true),
+		RUNTIME_ERROR(true),
+		TIME_LIMIT(true),
+		MEMORY_LIMIT(true),
+		WRONG_ANSWER(true),
+		CORRECT(true),
+		;
+
+		private final boolean isExit;
 	}
 }

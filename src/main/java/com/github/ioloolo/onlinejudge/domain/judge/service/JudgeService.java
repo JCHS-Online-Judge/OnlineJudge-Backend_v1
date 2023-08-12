@@ -48,7 +48,13 @@ public class JudgeService {
 				.language(request.getLanguage())
 				.source(request.getSource())
 				.at(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime())
-				.result(Judge.Result.builder().type(Judge.Result.Type.WAITING).build())
+				.result(
+						Judge.Result.builder()
+								.type(Judge.Result.Type.WAITING)
+								.memory(-1)
+								.time(-1)
+								.build()
+				)
 				.build();
 
 		Judge judge1 = judgeRepository.save(judge);

@@ -28,8 +28,6 @@ public class UserDetailsImpl implements UserDetails {
 
 	private final String username;
 
-	private final String email;
-
 	@JsonIgnore
 	private final String password;
 
@@ -43,7 +41,6 @@ public class UserDetailsImpl implements UserDetails {
 		return UserDetailsImpl.builder()
 				.id(user.getId().toString())
 				.username(user.getUsername())
-				.email(user.getEmail())
 				.password(user.getPassword())
 				.authorities(authorities)
 				.build();

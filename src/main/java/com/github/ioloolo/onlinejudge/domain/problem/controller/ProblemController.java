@@ -1,6 +1,7 @@
 package com.github.ioloolo.onlinejudge.domain.problem.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemIdAlreadyExistException;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemNotExistException;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemTitleAlreadyExistException;
@@ -32,8 +34,15 @@ public class ProblemController {
 	}
 
 	@PostMapping("/{id}")
-	public ResponseEntity<?> detail(@PathVariable("id") String id) throws ProblemNotExistException {
-		return ResponseEntity.ok(service.getProblem(id).orElseThrow(() -> new ProblemNotExistException(id)));
+	public ResponseEntity<?> detail(
+			Authentication authentication,
+			@PathVariable("id") String id
+	) throws ProblemNotExistException {
+
+		return ResponseEntity.ok(
+				service.getProblem(id, (UserDetailsImpl) authentication.getPrincipal())
+						.orElseThrow(() -> new ProblemNotExistException(id))
+		);
 	}
 
 	@PutMapping("/")

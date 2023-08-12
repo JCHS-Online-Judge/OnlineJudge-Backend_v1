@@ -8,11 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.github.ioloolo.onlinejudge.config.security.jwt.JwtUtil;
-import com.github.ioloolo.onlinejudge.domain.auth.exception.EmailAlreadyExistException;
 import com.github.ioloolo.onlinejudge.domain.auth.exception.UsernameAlreadyExistException;
 import com.github.ioloolo.onlinejudge.domain.auth.model.Role;
 import com.github.ioloolo.onlinejudge.domain.auth.model.User;
@@ -40,15 +40,9 @@ public class AuthService {
 		return jwtUtil.generateJwtToken(authentication);
 	}
 
-	public void register(String username, String email, String password)
-			throws UsernameAlreadyExistException, EmailAlreadyExistException {
-
+	public void register(String username, String password) throws UsernameAlreadyExistException {
 		if (userRepository.existsByUsername(username)) {
 			throw new UsernameAlreadyExistException();
-		}
-
-		if (userRepository.existsByEmail(email)) {
-			throw new EmailAlreadyExistException();
 		}
 
 		Role userRole = roleRepository.findByName(Role.Roles.ROLE_USER)
@@ -56,12 +50,18 @@ public class AuthService {
 
 		User user = User.builder()
 				.username(username)
-				.email(email)
 				.password(encoder.encode(password))
 				.role(userRole)
 				.build();
 
 		userRepository.save(user);
+	}
+
+	public boolean isAdmin(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+
+		return user.getRoles().contains(roleRepository.findByName(Role.Roles.ROLE_ADMIN).orElseThrow());
 	}
 
 	@PostConstruct

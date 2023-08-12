@@ -2,7 +2,6 @@ package com.github.ioloolo.onlinejudge.domain.judge.service;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -75,8 +74,8 @@ public class JudgeService {
 		return judgeRepository.findAll()
 				.stream()
 				.map(judge -> History.from(judge, user))
-				.sorted(Comparator.comparing(History::getAt))
-				.limit(25)
+				.sorted((o1, o2) -> o2.getAt().compareTo(o1.getAt()))
+				.limit(50)
 				.toList();
 	}
 }

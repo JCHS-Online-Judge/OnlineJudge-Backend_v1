@@ -49,7 +49,7 @@ public class Judge {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
-					sb.append(line);
+					sb.append(line).append('\n');
 				}
 			}
 			if (!sb.isEmpty()) {
@@ -108,7 +108,7 @@ public class Judge {
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
 					String line;
 					while ((line = reader.readLine()) != null) {
-						error.append(line);
+						error.append(line).append('\n');
 					}
 				}
 				if (!error.isEmpty()) {
@@ -119,7 +119,7 @@ public class Judge {
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 					String line;
 					while ((line = reader.readLine()) != null) {
-						output.append(line);
+						output.append(line).append('\n');
 					}
 				}
 				if (!output.toString().equals(testCase.getOutput())) {

@@ -2,7 +2,6 @@ package com.github.ioloolo.onlinejudge.domain.auth.model;
 
 import java.util.Set;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -27,17 +26,12 @@ public class User {
   ObjectId id;
 
   @NotBlank
-  @Size(max = 20)
+  @Size(min = 6, max = 16)
   String username;
 
   @NotBlank
-  @Size(max = 50)
-  @Email
-  String email;
-
-  @NotBlank
   @JsonIgnore
-  @Size(max = 120)
+  @Size(min = 10, max = 32)
   String password;
 
   @DBRef

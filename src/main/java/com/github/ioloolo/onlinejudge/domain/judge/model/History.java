@@ -26,6 +26,8 @@ public class History {
 	@NotEmpty
 	String source;
 
+	int sourceLength;
+
 	@NotNull
 	LocalDateTime at;
 
@@ -34,16 +36,19 @@ public class History {
 
 	public static History from(Judge judge, UserDetailsImpl user) {
 		Judge.Result result = judge.getResult();
+		String source = judge.getSource();
 
 		if (!user.getId().equals(judge.getUser().getId().toString())) {
 			result.setMessage(null);
+			source = "";
 		}
 
 		return History.builder()
 				.username(judge.getUser().getUsername())
 				.problemId(judge.getProblem().getProblemId())
 				.language(judge.getLanguage())
-				.source(judge.getSource())
+				.source(source)
+				.sourceLength(judge.getSource().getBytes().length)
 				.at(judge.getAt())
 				.result(result)
 				.build();

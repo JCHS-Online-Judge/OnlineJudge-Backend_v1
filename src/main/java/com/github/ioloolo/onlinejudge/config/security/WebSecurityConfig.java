@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,8 +59,8 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.cors().disable();
-		http.csrf().disable();
+		http.cors(AbstractHttpConfigurer::disable);
+		http.csrf(AbstractHttpConfigurer::disable);
 
 		http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 
@@ -69,14 +70,13 @@ public class WebSecurityConfig {
 		http.authenticationProvider(authenticationProvider());
 
 		http.authorizeRequests()
-				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers(HttpMethod.PUT, "/api/auth/**").permitAll()
 
 				.antMatchers(HttpMethod.PUT, "/api/problem/").hasRole("ADMIN")
 				.antMatchers(HttpMethod.PATCH, "/api/problem/").hasRole("ADMIN")
 				.antMatchers(HttpMethod.DELETE, "/api/problem/").hasRole("ADMIN")
-				.antMatchers("/api/problem/**").permitAll()
 
-				.antMatchers("/api/judge/**").authenticated()
+				.antMatchers(HttpMethod.PUT, "/api/**").authenticated()
 
 				.anyRequest().permitAll();
 

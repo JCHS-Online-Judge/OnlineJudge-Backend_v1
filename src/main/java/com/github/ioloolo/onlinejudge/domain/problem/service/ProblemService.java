@@ -5,6 +5,13 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.domain.auth.model.Role;
+import com.github.ioloolo.onlinejudge.domain.auth.model.User;
+import com.github.ioloolo.onlinejudge.domain.auth.repository.RoleRepository;
+import com.github.ioloolo.onlinejudge.domain.auth.repository.UserRepository;
+import com.github.ioloolo.onlinejudge.domain.judge.model.Judge;
+import com.github.ioloolo.onlinejudge.domain.judge.repository.JudgeRepository;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemIdAlreadyExistException;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemNotExistException;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemTitleAlreadyExistException;
@@ -17,21 +24,35 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ProblemService {
 
-	private final ProblemRepository repository;
+	private final ProblemRepository problemRepository;
+	private final UserRepository userRepository;
+	private final JudgeRepository judgeRepository;
+	private final RoleRepository roleRepository;
 
 	public List<Problem> getProblemList() {
-		return repository.findAll()
+		return problemRepository.findAll()
 				.stream()
 				.peek(problem -> problem.setTestCases(List.of()))
 				.toList();
 	}
 
-	public Optional<Problem> getProblem(String id) {
-		Optional<Problem> problemOptional = repository.findByProblemId(id);
+	public Optional<Problem> getProblem(String id, UserDetailsImpl user) {
+		Optional<Problem> problemOptional = problemRepository.findByProblemId(id);
 
 		if (problemOptional.isPresent()) {
 			Problem problem = problemOptional.get();
-			problem.setTestCases(List.of());
+
+			User user1 = userRepository.findByUsername(user.getUsername()).orElseThrow();
+			Role role = roleRepository.findByName(Role.Roles.ROLE_ADMIN).orElseThrow();
+
+			if (!user1.getRoles().contains(role)) {
+				problem.setTestCases(
+						problem.getTestCases()
+								.stream()
+								.filter(Problem.TestCase::isExample)
+								.toList()
+				);
+			}
 
 			return Optional.of(problem);
 		} else {
@@ -43,15 +64,15 @@ public class ProblemService {
 			ProblemIdAlreadyExistException,
 			ProblemTitleAlreadyExistException {
 
-		if (repository.existsByProblemId(problem.getProblemId())) {
+		if (problemRepository.existsByProblemId(problem.getProblemId())) {
 			throw new ProblemIdAlreadyExistException(problem);
 		}
 
-		if (repository.existsByTitle(problem.getTitle())) {
+		if (problemRepository.existsByTitle(problem.getTitle())) {
 			throw new ProblemTitleAlreadyExistException(problem);
 		}
 
-		repository.save(problem);
+		problemRepository.save(problem);
 	}
 
 	public void editProblem(String id, Problem changed) throws
@@ -59,31 +80,37 @@ public class ProblemService {
 			ProblemTitleAlreadyExistException,
 			ProblemIdAlreadyExistException {
 
-		Problem originProblem = repository.findByProblemId(id)
+		Problem originProblem = problemRepository.findByProblemId(id)
 				.orElseThrow(() -> new ProblemNotExistException(id));
 
 		if (!originProblem.getProblemId().equals(changed.getProblemId())
-				&& repository.existsByProblemId(changed.getProblemId())) {
+				&& problemRepository.existsByProblemId(changed.getProblemId())) {
 
 			throw new ProblemIdAlreadyExistException(changed);
 		}
 
 		if (!originProblem.getTitle().equals(changed.getTitle())
-				&& repository.existsByTitle(changed.getTitle())) {
+				&& problemRepository.existsByTitle(changed.getTitle())) {
 
 			throw new ProblemTitleAlreadyExistException(changed);
 		}
 
 		changed.setId(originProblem.getId());
 
-		repository.save(changed);
+		problemRepository.save(changed);
 	}
 
 	public void removeProblem(String id) throws ProblemNotExistException {
-		if (!repository.existsByProblemId(id)) {
+		if (!problemRepository.existsByProblemId(id)) {
 			throw new ProblemNotExistException(id);
 		}
 
-		repository.deleteByProblemId(id);
+		Problem problem = problemRepository.findByProblemId(id).orElseThrow();
+
+		for (Judge judge : judgeRepository.findAllByProblem(problem)) {
+			judgeRepository.delete(judge);
+		}
+
+		problemRepository.deleteByProblemId(id);
 	}
 }

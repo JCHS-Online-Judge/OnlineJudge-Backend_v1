@@ -23,6 +23,8 @@ dependencies {
     extraLibs 'org.slf4j:slf4j-api:2.0.7'
     extraLibs 'org.slf4j:slf4j-simple:2.0.7'
 
+    extraLibs "org.java-websocket:Java-WebSocket:1.5.4"
+
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
 

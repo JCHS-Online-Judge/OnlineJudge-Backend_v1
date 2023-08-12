@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.command.WaitContainerResultCallback;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
 import com.github.ioloolo.onlinejudge.domain.auth.model.User;
@@ -24,9 +23,11 @@ import com.github.ioloolo.onlinejudge.domain.problem.model.Problem;
 import com.github.ioloolo.onlinejudge.domain.problem.repository.ProblemRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class JudgeService {
 
 	private final UserRepository userRepository;
@@ -66,13 +67,6 @@ public class JudgeService {
 					.exec();
 
 			dockerClient.startContainerCmd(exec.getId()).exec();
-
-			dockerClient.waitContainerCmd(exec.getId())
-					.exec(new WaitContainerResultCallback())
-					.awaitStatusCode();
-
-			dockerClient.removeContainerCmd(exec.getId())
-					.exec();
 		});
 	}
 

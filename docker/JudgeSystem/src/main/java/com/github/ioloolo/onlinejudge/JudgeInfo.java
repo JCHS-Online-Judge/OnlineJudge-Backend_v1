@@ -1,11 +1,15 @@
 package com.github.ioloolo.onlinejudge;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 import com.mongodb.DBRef;
 
@@ -23,6 +27,8 @@ public final class JudgeInfo {
 	private static final MongoManager mongoManager = MongoManager.getInstance();
 	private static final String judgeId = System.getenv("JUDGE_ID");
 
+	private static final WebSocketClient webSocketClient;
+
 	private final String source;
 	private final Language language;
 
@@ -30,6 +36,31 @@ public final class JudgeInfo {
 	private final long memoryLimit;
 
 	private final List<TestCase> testCases;
+
+	static {
+		WebSocketClient webSocketClient1;
+		try {
+			webSocketClient1 = new WebSocketClient(new URI("ws://%s/api/ws/history".formatted(System.getenv("MONGODB_HOST")))) {
+				@Override
+				public void onOpen(ServerHandshake handshake) {}
+
+				@Override
+				public void onMessage(String message) {}
+
+				@Override
+				public void onClose(int code, String reason, boolean remote) {}
+
+				@Override
+				public void onError(Exception ex) {}
+			};
+
+			webSocketClient1.connect();
+		} catch (URISyntaxException ignored) {
+			webSocketClient1 = null;
+		}
+
+		webSocketClient = webSocketClient1;
+	}
 
 	public static JudgeInfo getJudgeInfo() {
 		Document judge = mongoManager.getJudgeCollection()
@@ -59,13 +90,20 @@ public final class JudgeInfo {
 		);
 
 		switch (type) {
+			case WAITING -> mongoManager.getJudgeCollection().updateOne(
+					new Document("_id", new ObjectId(judgeId)),
+					new Document("$set", new Document(
+							Map.of("result.time", -1,
+									"result.memory", -1,
+									"result.message", "")))
+			);
 			case PROCESSING -> mongoManager.getJudgeCollection().updateOne(
 					new Document("_id", new ObjectId(judgeId)),
 					new Document("$set", new Document(
 							Map.of("result.time", -1,
 									"result.memory", -1,
 									"result.message",
-									"%.0f%%".formatted((((Integer) args[0]).floatValue() / (Integer) args[1])))))
+									"%.0f%%".formatted((((Integer) args[0]).floatValue() / (Integer) args[1]) * 100))))
 			);
 			case COMPILE_ERROR, RUNTIME_ERROR -> mongoManager.getJudgeCollection().updateOne(
 					new Document("_id", new ObjectId(judgeId)),
@@ -77,6 +115,24 @@ public final class JudgeInfo {
 							Map.of("result.time", args[0],
 									"result.memory", args[1])))
 			);
+		}
+
+		if (webSocketClient != null) {
+			Document document = mongoManager.getJudgeCollection()
+					.find(new Document("_id", new ObjectId(judgeId)))
+					.first();
+			assert document != null;
+
+			Document result = document.get("result", Document.class);
+
+			webSocketClient.send("{" +
+							"\"id\": \"%s\", ".formatted(judgeId) +
+							"\"result\": {" +
+								"\"type\": \"%s\", ".formatted(result.getString("type")) +
+								"\"time\": \"%s\", ".formatted(Long.parseLong(String.valueOf(result.get("time")))) +
+								"\"memory\": \"%s\"," .formatted(Long.parseLong(String.valueOf(result.get("memory")))) +
+								"\"message\": \"%s\"".formatted(result.getString("message")) +
+							"} }");
 		}
 
 		if (type.isExit()) {

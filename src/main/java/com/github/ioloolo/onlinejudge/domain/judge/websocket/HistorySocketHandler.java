@@ -24,10 +24,8 @@ public class HistorySocketHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		String payload = message.getPayload();
-
 		for (WebSocketSession s : sessions) {
-			s.sendMessage(new TextMessage(payload));
+			s.sendMessage(new TextMessage(message.getPayload()));
 		}
 	}
 

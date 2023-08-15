@@ -15,6 +15,9 @@ import lombok.Data;
 public class History {
 
 	@NotEmpty
+	String judgeId;
+
+	@NotEmpty
 	String username;
 
 	@NotEmpty
@@ -45,6 +48,7 @@ public class History {
 		}
 
 		return History.builder()
+				.judgeId(judge.getId().toString())
 				.username(judge.getUser().getUsername())
 				.problemId(judge.getProblem().getProblemId())
 				.language(judge.getLanguage())

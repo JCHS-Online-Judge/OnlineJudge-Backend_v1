@@ -1,9 +1,9 @@
-package com.github.ioloolo.onlinejudge.config.security.jwt;
+package com.github.ioloolo.onlinejudge.common.config.security.jwt;
 
 import java.security.Key;
 import java.util.Date;
 
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsImpl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -21,7 +21,7 @@ public class JwtUtil {
 	private final Key secretKey;
 	private final int expirationMs;
 
-	public JwtUtil(@Value("${app.jwt.secret}") String secret, @Value("${app.jwt.expirationMs}") int expirationMs) {
+	public JwtUtil(@Value("${app.jwt.secret}") String secret, @Value("${app.jwt.expiration-ms}") int expirationMs) {
 		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
 		this.expirationMs = expirationMs;
 	}

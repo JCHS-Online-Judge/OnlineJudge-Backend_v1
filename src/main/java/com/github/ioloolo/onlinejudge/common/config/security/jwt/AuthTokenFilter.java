@@ -1,4 +1,4 @@
-package com.github.ioloolo.onlinejudge.config.security.jwt;
+package com.github.ioloolo.onlinejudge.common.config.security.jwt;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsServiceImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsServiceImpl;
 
 import lombok.AllArgsConstructor;
 
@@ -25,9 +26,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   private final UserDetailsServiceImpl userDetailsService;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request,
-          HttpServletResponse response,
-          FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(@NotNull HttpServletRequest request,
+          @NotNull HttpServletResponse response,
+          @NotNull FilterChain filterChain) throws ServletException, IOException {
 
     String jwt = parseJwt(request);
 

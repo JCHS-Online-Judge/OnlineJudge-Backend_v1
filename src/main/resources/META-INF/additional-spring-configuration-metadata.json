@@ -6,7 +6,7 @@
       "description": "Description for app.jwt.secret."
     },
     {
-      "name": "app.jwt.expirationMs",
+      "name": "app.jwt.expiration-ms",
       "type": "java.lang.Long",
       "description": "Description for app.jwt.secret."
     }

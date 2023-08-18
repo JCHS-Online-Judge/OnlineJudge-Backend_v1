@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.github.ioloolo.onlinejudge.config.security.jwt.JwtUtil;
+import com.github.ioloolo.onlinejudge.common.config.security.jwt.JwtUtil;
 import com.github.ioloolo.onlinejudge.domain.auth.exception.UsernameAlreadyExistException;
 import com.github.ioloolo.onlinejudge.domain.auth.model.Role;
 import com.github.ioloolo.onlinejudge.domain.auth.model.User;

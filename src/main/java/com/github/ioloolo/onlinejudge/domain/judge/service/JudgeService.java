@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsImpl;
 import com.github.ioloolo.onlinejudge.domain.auth.model.User;
 import com.github.ioloolo.onlinejudge.domain.auth.repository.UserRepository;
 import com.github.ioloolo.onlinejudge.domain.judge.model.History;

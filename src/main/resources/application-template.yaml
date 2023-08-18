@@ -1,0 +1,22 @@
+server:
+  port: 443
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-type: PKCS12
+    key-store-password: (YOUR_KEY_STORE_PASSWORD)
+
+spring:
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      username: (YOUR_DB_USERNAME)
+      password: (YOUR_DB_PASSWORD)
+      authentication-database: admin
+      database: oj
+
+app:
+  jwt:
+    secret: (YOUR_JWT_SECRET)
+    expiration-ms: 31536000000

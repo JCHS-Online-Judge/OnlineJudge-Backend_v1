@@ -1,4 +1,4 @@
-package com.github.ioloolo.onlinejudge.config.security.services;
+package com.github.ioloolo.onlinejudge.common.config.security.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

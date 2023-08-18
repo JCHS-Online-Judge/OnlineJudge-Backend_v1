@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsImpl;
 
 import lombok.Builder;
 import lombok.Data;

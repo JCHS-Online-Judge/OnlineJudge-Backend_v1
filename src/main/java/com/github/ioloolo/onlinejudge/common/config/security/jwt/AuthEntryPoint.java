@@ -1,4 +1,4 @@
-package com.github.ioloolo.onlinejudge.config.security.jwt;
+package com.github.ioloolo.onlinejudge.common.config.security.jwt;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.github.ioloolo.onlinejudge.config.security;
+package com.github.ioloolo.onlinejudge.common.config.security;
 
 import javax.ws.rs.HttpMethod;
 
@@ -16,10 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.github.ioloolo.onlinejudge.config.security.jwt.AuthEntryPoint;
-import com.github.ioloolo.onlinejudge.config.security.jwt.AuthTokenFilter;
-import com.github.ioloolo.onlinejudge.config.security.jwt.JwtUtil;
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsServiceImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.jwt.AuthEntryPoint;
+import com.github.ioloolo.onlinejudge.common.config.security.jwt.AuthTokenFilter;
+import com.github.ioloolo.onlinejudge.common.config.security.jwt.JwtUtil;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsServiceImpl;
 
 import lombok.AllArgsConstructor;
 

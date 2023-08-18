@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsImpl;
 import com.github.ioloolo.onlinejudge.domain.auth.model.Role;
 import com.github.ioloolo.onlinejudge.domain.auth.model.User;
 import com.github.ioloolo.onlinejudge.domain.auth.repository.RoleRepository;

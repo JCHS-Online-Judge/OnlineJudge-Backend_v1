@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.ioloolo.onlinejudge.config.security.services.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.config.security.services.UserDetailsImpl;
 import com.github.ioloolo.onlinejudge.domain.judge.service.JudgeService;
 import com.github.ioloolo.onlinejudge.domain.problem.context.request.JudgeRequest;
 import com.github.ioloolo.onlinejudge.domain.problem.exception.ProblemNotExistException;

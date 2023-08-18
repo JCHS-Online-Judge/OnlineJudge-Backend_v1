@@ -1,4 +1,4 @@
-package com.github.ioloolo.onlinejudge.config.security.services;
+package com.github.ioloolo.onlinejudge.common.config.security.services;
 
 import java.io.Serial;
 import java.util.Collection;

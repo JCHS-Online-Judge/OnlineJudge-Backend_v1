@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt.expirationDay",
+      "type": "java.lang.Integer",
+      "description": "Description for app.jwt.expirationMs."
+    },
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Description for app.jwt.secret."
+    },
+    {
+      "name": "app.judge.threadPoolSize",
+      "type": "java.lang.String",
+      "description": "Description for app.judge.threadPoolSize."
+    },
+    {
+      "name": "app.judge.containerName",
+      "type": "java.lang.String",
+      "description": "Description for app.judge.containerName."
+    }
+  ]
+}

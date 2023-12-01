@@ -1,0 +1,11 @@
+<configuration>
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
+        <encoder>
+            <pattern>[%d{YYYY-MM-dd HH:mm:ss}] %highlight(%-6level) %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

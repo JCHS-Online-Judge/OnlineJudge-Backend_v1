@@ -1,0 +1,14 @@
+package com.github.ioloolo.onlinejudge.domain.board.controller.payload.response;
+
+import java.util.Map;
+
+import com.github.ioloolo.onlinejudge.common.payload.response.KVResponse;
+import com.github.ioloolo.onlinejudge.domain.board.data.Board;
+
+public class BoardInfoResponse extends KVResponse {
+
+	public BoardInfoResponse(Board board) {
+
+		super(false, Map.of("board", board));
+	}
+}

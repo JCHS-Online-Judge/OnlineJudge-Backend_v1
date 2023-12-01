@@ -87,10 +87,9 @@ public class JudgeController {
 		String lectureId = request.getLectureId();
 		int page = request.getPage();
 
-		List<JudgeHistory> history = service.getLectureHistory(
-				lectureId,
-				page,
-				userDetails == null ? null : userDetails.toUser()
+		List<JudgeHistory> history = service.getLectureHistory(lectureId,
+															   page,
+															   userDetails == null ? null : userDetails.toUser()
 		);
 		int maxPage = service.getLectureHistoryMaxPage(lectureId);
 
@@ -106,10 +105,9 @@ public class JudgeController {
 		String contestId = request.getContestId();
 		int page = request.getPage();
 
-		List<JudgeHistory> history = service.getContestHistory(
-				contestId,
-				page,
-				userDetails == null ? null : userDetails.toUser()
+		List<JudgeHistory> history = service.getContestHistory(contestId,
+															   page,
+															   userDetails == null ? null : userDetails.toUser()
 		);
 		int maxPage = service.getContestHistoryMaxPage(contestId);
 

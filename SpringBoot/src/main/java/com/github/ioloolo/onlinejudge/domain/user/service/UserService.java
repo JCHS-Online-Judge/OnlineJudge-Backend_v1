@@ -58,9 +58,8 @@ public class UserService {
 
 	public String login(String username, String password) {
 
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				username,
-				password
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
+																										  password
 		);
 		Authentication authentication = authenticationManager.authenticate(authenticationToken);
 

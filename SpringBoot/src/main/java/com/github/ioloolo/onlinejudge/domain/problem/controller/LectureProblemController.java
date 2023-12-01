@@ -52,9 +52,8 @@ public class LectureProblemController {
 			@AuthenticationPrincipal UserDetailsImpl userDetails
 	) throws Exception {
 
-		return ResponseEntity.ok(new ProblemInfoResponse(service.getProblemInfo(
-				request.getProblemId(),
-				userDetails.toUser()
+		return ResponseEntity.ok(new ProblemInfoResponse(service.getProblemInfo(request.getProblemId(),
+																				userDetails.toUser()
 		)));
 	}
 

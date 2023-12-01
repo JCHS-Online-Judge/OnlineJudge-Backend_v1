@@ -40,10 +40,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			String username = jwtUtil.extract(token);
 
 			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-			AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					userDetails,
-					null,
-					userDetails.getAuthorities()
+			AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+																								 null,
+																								 userDetails.getAuthorities()
 			);
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

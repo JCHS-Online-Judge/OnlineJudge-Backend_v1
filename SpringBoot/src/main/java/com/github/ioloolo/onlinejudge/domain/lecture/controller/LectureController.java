@@ -1,159 +1,148 @@
 package com.github.ioloolo.onlinejudge.domain.lecture.controller;
 
+import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
+import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.*;
+import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.response.InviteCodeResponse;
+import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.response.LectureInfoResponse;
+import com.github.ioloolo.onlinejudge.domain.lecture.data.Lecture;
+import com.github.ioloolo.onlinejudge.domain.lecture.service.LectureService;
+import com.github.ioloolo.onlinejudge.domain.user.data.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsImpl;
-import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.CreateLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.DeleteLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.ForceJoinLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.ForceLeaveLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.JoinLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.LeaveLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.LectureInfoRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.RefreshInviteCodeRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.request.UpdateLectureRequest;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.response.InviteCodeResponse;
-import com.github.ioloolo.onlinejudge.domain.lecture.controller.payload.response.LectureInfoResponse;
-import com.github.ioloolo.onlinejudge.domain.lecture.service.LectureService;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/lecture")
 public class LectureController {
 
-	private final LectureService service;
+    private final LectureService service;
 
-	@PostMapping
-	@PreAuthorize("hasRole('ROLE_USER')")
-	public ResponseEntity<?> getLectureInfo(
-			@Validated(OrderChecks.class) @RequestBody LectureInfoRequest request,
-			@AuthenticationPrincipal UserDetailsImpl userDetails
-	) throws Exception {
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<LectureInfoResponse> getLectureInfo(
+            @Validated(OrderChecks.class) @RequestBody LectureInfoRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		return ResponseEntity.ok(new LectureInfoResponse(service.getLectureInfo(request.getLectureId(),
-																				userDetails.toUser()
-		)));
-	}
+        String lectureId = request.getLectureId();
+        User user = userDetails.toUser();
 
-	@PutMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> createLecture(
-			@Validated(OrderChecks.class) @RequestBody CreateLectureRequest request
-	) throws Exception {
+        Lecture lectureInfo = service.getLectureInfo(lectureId, user);
 
-		String title = request.getTitle();
-		String content = request.getContent();
+        return ResponseEntity.ok(new LectureInfoResponse(lectureInfo));
+    }
 
-		service.createLecture(title, content);
+    @PutMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> createLecture(
+            @Validated(OrderChecks.class) @RequestBody CreateLectureRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String title = request.getTitle();
+        String content = request.getContent();
 
-	@PostMapping("/inviteCode")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> refreshInviteCode(
-			@Validated(OrderChecks.class) @RequestBody RefreshInviteCodeRequest request
-	) throws Exception {
+        service.createLecture(title, content);
 
-		String lectureId = request.getLectureId();
-		String inviteCode = service.refreshInviteCode(lectureId);
+        return ResponseEntity.ok().build();
+    }
 
-		return ResponseEntity.ok(new InviteCodeResponse(inviteCode));
-	}
+    @PostMapping("/inviteCode")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<InviteCodeResponse> refreshInviteCode(
+            @Validated(OrderChecks.class) @RequestBody RefreshInviteCodeRequest request
+    ) throws Exception {
 
-	@PatchMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> updateLecture(
-			@Validated(OrderChecks.class) @RequestBody UpdateLectureRequest request
-	) throws Exception {
+        String lectureId = request.getLectureId();
+        String inviteCode = service.refreshInviteCode(lectureId);
 
-		String lectureId = request.getLectureId();
+        return ResponseEntity.ok(new InviteCodeResponse(inviteCode));
+    }
 
-		String title = request.getTitle();
-		String content = request.getContent();
+    @PatchMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> updateLecture(
+            @Validated(OrderChecks.class) @RequestBody UpdateLectureRequest request
+    ) throws Exception {
 
-		service.updateLecture(lectureId, title, content);
+        String lectureId = request.getLectureId();
 
-		return ResponseEntity.ok().build();
-	}
+        String title = request.getTitle();
+        String content = request.getContent();
 
-	@DeleteMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> deleteLecture(
-			@Validated(OrderChecks.class) @RequestBody DeleteLectureRequest request
-	) throws Exception {
+        service.updateLecture(lectureId, title, content);
 
-		String lectureId = request.getLectureId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.deleteLecture(lectureId);
+    @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteLecture(
+            @Validated(OrderChecks.class) @RequestBody DeleteLectureRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String lectureId = request.getLectureId();
 
-	@PutMapping("/participate")
-	public ResponseEntity<?> joinLecture(
-			@Validated(OrderChecks.class) @RequestBody JoinLectureRequest request,
-			@AuthenticationPrincipal UserDetailsImpl userDetails
-	) throws Exception {
+        service.deleteLecture(lectureId);
 
-		String code = request.getCode();
+        return ResponseEntity.ok().build();
+    }
 
-		service.joinLecture(code, userDetails.toUser());
+    @PutMapping("/participate")
+    public ResponseEntity<Void> joinLecture(
+            @Validated(OrderChecks.class) @RequestBody JoinLectureRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String code = request.getCode();
 
-	@DeleteMapping("/participate")
-	public ResponseEntity<?> leaveLecture(
-			@Validated(OrderChecks.class) @RequestBody LeaveLectureRequest request,
-			@AuthenticationPrincipal UserDetailsImpl userDetails
-	) throws Exception {
+        service.joinLecture(code, userDetails.toUser());
 
-		String lectureId = request.getLectureId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.leaveLecture(lectureId, userDetails.toUser());
+    @DeleteMapping("/participate")
+    public ResponseEntity<Void> leaveLecture(
+            @Validated(OrderChecks.class) @RequestBody LeaveLectureRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String lectureId = request.getLectureId();
 
-	@PutMapping("/participate/force")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> forceJoinLecture(
-			@Validated(OrderChecks.class) @RequestBody ForceJoinLectureRequest request
-	) throws Exception {
+        service.leaveLecture(lectureId, userDetails.toUser());
 
-		String lectureId = request.getLectureId();
-		String userId = request.getUserId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.forceJoinLecture(lectureId, userId);
+    @PutMapping("/participate/force")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> forceJoinLecture(
+            @Validated(OrderChecks.class) @RequestBody ForceJoinLectureRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String lectureId = request.getLectureId();
+        String userId = request.getUserId();
 
-	@DeleteMapping("/participate/force")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> forceLeaveLecture(
-			@Validated(OrderChecks.class) @RequestBody ForceLeaveLectureRequest request
-	) throws Exception {
+        service.forceJoinLecture(lectureId, userId);
 
-		String lectureId = request.getLectureId();
-		String userId = request.getUserId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.forceLeaveLecture(lectureId, userId);
+    @DeleteMapping("/participate/force")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> forceLeaveLecture(
+            @Validated(OrderChecks.class) @RequestBody ForceLeaveLectureRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String lectureId = request.getLectureId();
+        String userId = request.getUserId();
+
+        service.forceLeaveLecture(lectureId, userId);
+
+        return ResponseEntity.ok().build();
+    }
 }

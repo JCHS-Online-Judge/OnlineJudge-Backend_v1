@@ -27,6 +27,8 @@ public class User {
 	@JsonIgnore
 	private String password;
 
+	private String name;
+
 	@DBRef
 	@Singular
 	private List<Role> roles;

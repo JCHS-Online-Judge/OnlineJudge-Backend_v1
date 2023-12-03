@@ -43,15 +43,24 @@ public class UserService {
 		}
 	}
 
-	public void register(String username, String password) throws Exception {
+	public void register(String username, String password, String name) throws Exception {
 
 		if (repository.existsByUsername(username)) {
 			throw ExceptionFactory.of(ExceptionFactory.Type.ALREADY_EXIST_USERNAME);
 		}
 
+		if (repository.existsByName(name)) {
+			throw ExceptionFactory.of(ExceptionFactory.Type.ALREADY_EXIST_NAME);
+		}
+
 		Role defaultRole = roleRepository.findByRole(Role.Roles.ROLE_USER).orElseThrow();
 
-		User user = User.builder().username(username).password(encoder.encode(password)).role(defaultRole).build();
+		User user = User.builder()
+				.username(username)
+				.password(encoder.encode(password))
+				.name(name)
+				.role(defaultRole)
+				.build();
 
 		repository.save(user);
 	}
@@ -71,7 +80,7 @@ public class UserService {
 		return repository.findAll();
 	}
 
-	public void updatePassword(String userId, String password) throws Exception {
+	public User getUserInfo(String userId) throws Exception {
 
 		Optional<User> userOptional = repository.findById(userId);
 		if (userOptional.isEmpty()) {
@@ -79,9 +88,31 @@ public class UserService {
 		}
 		User user = userOptional.get();
 
-		user.setPassword(encoder.encode(password));
+		user.setId(null);
+		user.setPassword(null);
 
-		repository.save(user);
+		return user;
+	}
+
+	public void updateUser(String userId, String name, String password, User user) throws Exception {
+
+		Optional<User> userOptional = repository.findById(userId);
+		if (userOptional.isEmpty()) {
+			throw ExceptionFactory.of(ExceptionFactory.Type.USER_NOT_FOUND);
+		}
+		User user1 = userOptional.get();
+
+		if (!user.isAdmin() && !user1.equals(user)) {
+			throw ExceptionFactory.of(ExceptionFactory.Type.UNAUTHORIZED);
+		}
+
+		user1.setName(name);
+
+		if (password != null && !password.isEmpty()) {
+			user1.setPassword(encoder.encode(password));
+		}
+
+		repository.save(user1);
 	}
 
 	public void deleteUser(String userId) throws Exception {

@@ -17,8 +17,8 @@ public class ExceptionFactory {
 	public enum Type {
 		UNAUTHORIZED("권한이 없습니다."), BAD_REQUEST("잘못된 요청입니다."),
 
-		USER_NOT_FOUND("존재하지 않는 사용자입니다."), ALREADY_EXIST_USERNAME("이미 가입된 아이디가 존재합니다."), ALREADY_EXIST_EMAIL(
-				"이미 가입된 이메일이 존재합니다."),
+		USER_NOT_FOUND("존재하지 않는 사용자입니다."), ALREADY_EXIST_USERNAME("이미 가입된 아이디가 존재합니다."), ALREADY_EXIST_NAME(
+				"이미 가입된 이름이 존재합니다."),
 
 		PROBLEM_NOT_FOUND("존재하지 않는 문제입니다."), PROBLEM_NUMBER_ALREADY_EXISTS("이미 존재하는 문제 번호입니다."), PROBLEM_TITLE_ALREADY_EXISTS(
 				"이미 존재하는 문제 제목입니다."),

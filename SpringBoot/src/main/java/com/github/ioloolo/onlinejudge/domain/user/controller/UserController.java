@@ -1,91 +1,104 @@
 package com.github.ioloolo.onlinejudge.domain.user.controller;
 
+import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
+import com.github.ioloolo.onlinejudge.domain.user.controller.payload.request.*;
+import com.github.ioloolo.onlinejudge.domain.user.controller.payload.response.TokenResponse;
+import com.github.ioloolo.onlinejudge.domain.user.controller.payload.response.UserInfoResponse;
+import com.github.ioloolo.onlinejudge.domain.user.controller.payload.response.UserListResponse;
+import com.github.ioloolo.onlinejudge.domain.user.data.User;
+import com.github.ioloolo.onlinejudge.domain.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
-import com.github.ioloolo.onlinejudge.domain.user.controller.payload.request.DeleteUserRequest;
-import com.github.ioloolo.onlinejudge.domain.user.controller.payload.request.LoginRequest;
-import com.github.ioloolo.onlinejudge.domain.user.controller.payload.request.RegisterRequest;
-import com.github.ioloolo.onlinejudge.domain.user.controller.payload.request.UpdatePasswordRequest;
-import com.github.ioloolo.onlinejudge.domain.user.controller.payload.response.TokenResponse;
-import com.github.ioloolo.onlinejudge.domain.user.service.UserService;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
 
-	private final UserService service;
+    private final UserService service;
 
-	@PutMapping
-	@PreAuthorize("isAnonymous()")
-	public ResponseEntity<?> register(
-			@Validated(OrderChecks.class) @RequestBody RegisterRequest request
-	) throws Exception {
+    @PutMapping("/credential")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<TokenResponse> register(
+            @Validated(OrderChecks.class) @RequestBody RegisterRequest request
+    ) throws Exception {
 
-		String username = request.getUsername();
-		String password = request.getPassword();
+        String username = request.getUsername();
+        String password = request.getPassword();
+        String name = request.getName();
 
-		service.register(username, password);
-		String jwtToken = service.login(username, password);
+        service.register(username, password, name);
+        String jwtToken = service.login(username, password);
 
-		return ResponseEntity.ok(new TokenResponse(jwtToken));
-	}
+        return ResponseEntity.ok(new TokenResponse(jwtToken));
+    }
 
-	@PostMapping
-	@PreAuthorize("isAnonymous()")
-	public ResponseEntity<?> login(@Validated(OrderChecks.class) @RequestBody LoginRequest request) {
+    @PostMapping("/credential")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity<TokenResponse> login(@Validated(OrderChecks.class) @RequestBody LoginRequest request) {
 
-		String username = request.getUsername();
-		String password = request.getPassword();
+        String username = request.getUsername();
+        String password = request.getPassword();
 
-		String jwtToken = service.login(username, password);
+        String jwtToken = service.login(username, password);
 
-		return ResponseEntity.ok(new TokenResponse(jwtToken));
-	}
+        return ResponseEntity.ok(new TokenResponse(jwtToken));
+    }
 
-	@PostMapping("/all")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> getUsers() {
+    @PostMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<UserListResponse> getUsers() {
 
-		return ResponseEntity.ok(service.getUsers());
-	}
+        List<User> users = service.getUsers();
 
-	@PatchMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> updatePassword(
-			@Validated(OrderChecks.class) @RequestBody UpdatePasswordRequest request
-	) throws Exception {
+        return ResponseEntity.ok(new UserListResponse(users));
+    }
 
-		String userId = request.getUserId();
-		String password = request.getNewPassword();
+    @PostMapping
+    public ResponseEntity<UserInfoResponse> getUserInfo(
+            @Validated(OrderChecks.class) @RequestBody UserInfoRequest request
+    ) throws Exception {
 
-		service.updatePassword(userId, password);
+        String userId = request.getUserId();
 
-		return ResponseEntity.ok().build();
-	}
+        User userInfo = service.getUserInfo(userId);
 
-	@DeleteMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> deleteUser(
-			@Validated(OrderChecks.class) @RequestBody DeleteUserRequest request
-	) throws Exception {
+        return ResponseEntity.ok(new UserInfoResponse(userInfo));
+    }
 
-		String userId = request.getUserId();
+    @PatchMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Void> updateUser(
+            @Validated(OrderChecks.class) @RequestBody UpdateUserRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		service.deleteUser(userId);
+        String userId = request.getUserId();
+        String name = request.getName();
+        String password = request.getPassword();
 
-		return ResponseEntity.ok().build();
-	}
+        service.updateUser(userId, name, password, userDetails.toUser());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteUser(
+            @Validated(OrderChecks.class) @RequestBody DeleteUserRequest request
+    ) throws Exception {
+
+        String userId = request.getUserId();
+
+        service.deleteUser(userId);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -1,165 +1,154 @@
 package com.github.ioloolo.onlinejudge.domain.contest.controller;
 
-import java.time.LocalDateTime;
-
+import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsImpl;
+import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
+import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.*;
+import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.response.ContestInfoResponse;
+import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.response.InviteCodeResponse;
+import com.github.ioloolo.onlinejudge.domain.contest.data.Contest;
+import com.github.ioloolo.onlinejudge.domain.contest.service.ContestService;
+import com.github.ioloolo.onlinejudge.domain.user.data.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsImpl;
-import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.ContestInfoRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.CreateContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.DeleteContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.ForceJoinContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.ForceLeaveContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.JoinContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.LeaveContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.RefreshInviteCodeRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.request.UpdateContestRequest;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.response.ContestInfoResponse;
-import com.github.ioloolo.onlinejudge.domain.contest.controller.payload.response.InviteCodeResponse;
-import com.github.ioloolo.onlinejudge.domain.contest.service.ContestService;
-
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/contest")
 public class ContestController {
 
-	private final ContestService service;
+    private final ContestService service;
 
-	@PostMapping
-	@PreAuthorize("hasRole('ROLE_USER')")
-	public ResponseEntity<?> getContestInfo(
-			@Validated(OrderChecks.class) @RequestBody ContestInfoRequest request,
-			@AuthenticationPrincipal UserDetailsImpl userDetails
-	) throws Exception {
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ContestInfoResponse> getContestInfo(
+            @Validated(OrderChecks.class) @RequestBody ContestInfoRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		return ResponseEntity.ok(new ContestInfoResponse(service.getContestInfo(request.getContestId(),
-																				userDetails.toUser()
-		)));
-	}
+        String contestId = request.getContestId();
+        User user = userDetails.toUser();
 
-	@PutMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> createContest(
-			@Validated(OrderChecks.class) @RequestBody CreateContestRequest request
-	) throws Exception {
+        Contest contestInfo = service.getContestInfo(contestId, user);
 
-		String title = request.getTitle();
-		String content = request.getContent();
-		LocalDateTime startTime = request.getStartTime();
-		LocalDateTime endTime = request.getEndTime();
+        return ResponseEntity.ok(new ContestInfoResponse(contestInfo));
+    }
 
-		service.createContest(title, content, startTime, endTime);
+    @PutMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> createContest(
+            @Validated(OrderChecks.class) @RequestBody CreateContestRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String title = request.getTitle();
+        String content = request.getContent();
+        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime endTime = request.getEndTime();
 
-	@PostMapping("/inviteCode")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> refreshInviteCode(
-			@Validated(OrderChecks.class) @RequestBody RefreshInviteCodeRequest request
-	) throws Exception {
+        service.createContest(title, content, startTime, endTime);
 
-		String contestId = request.getContestId();
-		String inviteCode = service.refreshInviteCode(contestId);
+        return ResponseEntity.ok().build();
+    }
 
-		return ResponseEntity.ok(new InviteCodeResponse(inviteCode));
-	}
+    @PostMapping("/inviteCode")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<InviteCodeResponse> refreshInviteCode(
+            @Validated(OrderChecks.class) @RequestBody RefreshInviteCodeRequest request
+    ) throws Exception {
 
-	@PatchMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> updateContest(
-			@Validated(OrderChecks.class) @RequestBody UpdateContestRequest request
-	) throws Exception {
+        String contestId = request.getContestId();
+        String inviteCode = service.refreshInviteCode(contestId);
 
-		String contestId = request.getContestId();
+        return ResponseEntity.ok(new InviteCodeResponse(inviteCode));
+    }
 
-		String title = request.getTitle();
-		String content = request.getContent();
-		LocalDateTime startTime = request.getStartTime();
-		LocalDateTime endTime = request.getEndTime();
+    @PatchMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> updateContest(
+            @Validated(OrderChecks.class) @RequestBody UpdateContestRequest request
+    ) throws Exception {
 
-		service.updateContest(contestId, title, content, startTime, endTime);
+        String contestId = request.getContestId();
 
-		return ResponseEntity.ok().build();
-	}
+        String title = request.getTitle();
+        String content = request.getContent();
+        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime endTime = request.getEndTime();
 
-	@DeleteMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> deleteContest(
-			@Validated(OrderChecks.class) @RequestBody DeleteContestRequest request
-	) throws Exception {
+        service.updateContest(contestId, title, content, startTime, endTime);
 
-		String contestId = request.getContestId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.deleteContest(contestId);
+    @DeleteMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteContest(
+            @Validated(OrderChecks.class) @RequestBody DeleteContestRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String contestId = request.getContestId();
 
-	@PutMapping("/participate")
-	public ResponseEntity<?> joinContest(
-			@Validated(OrderChecks.class) @RequestBody JoinContestRequest request,
-			@AuthenticationPrincipal UserDetailsImpl userDetails
-	) throws Exception {
+        service.deleteContest(contestId);
 
-		String code = request.getCode();
+        return ResponseEntity.ok().build();
+    }
 
-		service.joinContest(code, userDetails.toUser());
+    @PutMapping("/participate")
+    public ResponseEntity<Void> joinContest(
+            @Validated(OrderChecks.class) @RequestBody JoinContestRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String code = request.getCode();
 
-	@DeleteMapping("/participate")
-	public ResponseEntity<?> leaveContest(
-			@Validated(OrderChecks.class) @RequestBody LeaveContestRequest request,
-			@AuthenticationPrincipal UserDetailsImpl userDetails
-	) throws Exception {
+        service.joinContest(code, userDetails.toUser());
 
-		String contestId = request.getContestId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.leaveContest(contestId, userDetails.toUser());
+    @DeleteMapping("/participate")
+    public ResponseEntity<Void> leaveContest(
+            @Validated(OrderChecks.class) @RequestBody LeaveContestRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String contestId = request.getContestId();
 
-	@PutMapping("/participate/force")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> forceJoinContest(
-			@Validated(OrderChecks.class) @RequestBody ForceJoinContestRequest request
-	) throws Exception {
+        service.leaveContest(contestId, userDetails.toUser());
 
-		String contestId = request.getContestId();
-		String userId = request.getUserId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.forceJoinContest(contestId, userId);
+    @PutMapping("/participate/force")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> forceJoinContest(
+            @Validated(OrderChecks.class) @RequestBody ForceJoinContestRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String contestId = request.getContestId();
+        String userId = request.getUserId();
 
-	@DeleteMapping("/participate/force")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> forceLeaveContest(
-			@Validated(OrderChecks.class) @RequestBody ForceLeaveContestRequest request
-	) throws Exception {
+        service.forceJoinContest(contestId, userId);
 
-		String contestId = request.getContestId();
-		String userId = request.getUserId();
+        return ResponseEntity.ok().build();
+    }
 
-		service.forceLeaveContest(contestId, userId);
+    @DeleteMapping("/participate/force")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> forceLeaveContest(
+            @Validated(OrderChecks.class) @RequestBody ForceLeaveContestRequest request
+    ) throws Exception {
 
-		return ResponseEntity.ok().build();
-	}
+        String contestId = request.getContestId();
+        String userId = request.getUserId();
+
+        service.forceLeaveContest(contestId, userId);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -31,7 +31,8 @@ public class BoardFileController {
     @PutMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<FileInfoResponse> uploadFile(
-            @RequestParam("file") MultipartFile file, @AuthenticationPrincipal UserDetailsImpl userDetails
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws Exception {
 
         String fileName = service.uploadFile(file, userDetails.toUser());

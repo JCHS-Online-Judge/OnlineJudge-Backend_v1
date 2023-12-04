@@ -1,11 +1,10 @@
 package com.github.ioloolo.onlinejudge.domain.user.repository;
 
-import java.util.Optional;
-
+import com.github.ioloolo.onlinejudge.domain.user.data.Role;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.github.ioloolo.onlinejudge.domain.user.data.Role;
+import java.util.Optional;
 
 public interface RoleRepository extends MongoRepository<Role, String> {
-	Optional<Role> findByRole(Role.Roles role);
+    Optional<Role> findByRole(Role.Roles role);
 }

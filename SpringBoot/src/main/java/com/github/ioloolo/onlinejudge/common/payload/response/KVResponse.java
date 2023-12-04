@@ -4,13 +4,13 @@ import java.util.Map;
 
 public class KVResponse extends Response<Map<?, ?>> {
 
-	public KVResponse(Map<?, ?> map) {
+    public KVResponse(Map<?, ?> map) {
 
-		super(map);
-	}
+        super(map);
+    }
 
-	public KVResponse(boolean isError, Map<?, ?> content) {
+    public KVResponse(boolean isError, Map<?, ?> content) {
 
-		super(isError, content);
-	}
+        super(isError, content);
+    }
 }

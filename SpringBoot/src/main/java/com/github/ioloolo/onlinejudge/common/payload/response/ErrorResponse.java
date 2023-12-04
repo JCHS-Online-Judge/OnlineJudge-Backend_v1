@@ -4,13 +4,13 @@ import java.util.Map;
 
 public class ErrorResponse extends KVResponse {
 
-	public ErrorResponse(Exception exception) {
+    public ErrorResponse(Exception exception) {
 
-		this(exception.getMessage());
-	}
+        this(exception.getMessage());
+    }
 
-	public ErrorResponse(String message) {
+    public ErrorResponse(String message) {
 
-		super(true, Map.of("error", message));
-	}
+        super(true, Map.of("error", message));
+    }
 }

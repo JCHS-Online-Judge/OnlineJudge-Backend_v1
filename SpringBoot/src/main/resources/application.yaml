@@ -6,14 +6,14 @@ spring:
     mongodb:
       host: localhost
       port: 27017
-      username: (USERNAME)
-      password: (PASSWORD)
+      username: sondaehyeon01
+      password: RootMJ0616!~
       database: OnlineJudge
       authentication-database: admin
 
 app:
   jwt:
-    secret: (JWT SECRET - 256bit)
+    secret: KdkbpitUnDTfxvacO30jawTSx0QwfEDsYS9g4sShK7uv3JB7UdE1LqtvYvtoBeGpZi1CYRo3DEoHb3MBIhZRdQCftXvww16U9fhHLy6swkGKqp0fOdkIWIOK447HMpHlxVSj3eLfRnKTF0aa5gjLrKPJPVYpO6CWrDzyrMpw5MlYRZ0EfGbfjTrDp5aKEIQcM9rSP1SgfpHwIuSrNjlYgpgBcdvacRwLLjEu6krr4X6mUDCLh6oMgU2QYwn3jb8U
     expirationDay: 30
   judge:
     containerName: oj-judge-container

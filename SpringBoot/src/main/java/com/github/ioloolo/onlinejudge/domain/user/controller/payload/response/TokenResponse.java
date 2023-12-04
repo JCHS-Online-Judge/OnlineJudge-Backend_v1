@@ -1,13 +1,13 @@
 package com.github.ioloolo.onlinejudge.domain.user.controller.payload.response;
 
-import java.util.Map;
-
 import com.github.ioloolo.onlinejudge.common.payload.response.KVResponse;
+
+import java.util.Map;
 
 public class TokenResponse extends KVResponse {
 
-	public TokenResponse(String token) {
+    public TokenResponse(String token) {
 
-		super(Map.of("token", "Bearer " + token));
-	}
+        super(Map.of("token", "Bearer " + token));
+    }
 }

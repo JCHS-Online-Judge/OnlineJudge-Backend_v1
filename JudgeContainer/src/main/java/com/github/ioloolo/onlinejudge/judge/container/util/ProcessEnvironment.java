@@ -8,65 +8,65 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE, staticName = "of")
 public class ProcessEnvironment {
 
-	private final MongoConnectionInfo mongoConnectionInfo = new MongoConnectionInfo();
+    private final MongoConnectionInfo mongoConnectionInfo = new MongoConnectionInfo();
 
-	private final ArgumentInfo argumentInfo = new ArgumentInfo();
+    private final ArgumentInfo argumentInfo = new ArgumentInfo();
 
-	public static ProcessEnvironment getInstance() {
+    public static ProcessEnvironment getInstance() {
 
-		return LazyHolder.INSTANCE;
-	}
+        return LazyHolder.INSTANCE;
+    }
 
-	public void init() {
+    public void init() {
 
-		initMongoConnectionInfo();
-		initArgumentInfo();
-	}
+        initMongoConnectionInfo();
+        initArgumentInfo();
+    }
 
-	private void initMongoConnectionInfo() {
+    private void initMongoConnectionInfo() {
 
-		mongoConnectionInfo.setUsername(get("MONGODB_USERNAME"));
-		mongoConnectionInfo.setPassword(get("MONGODB_PASSWORD"));
-		mongoConnectionInfo.setHost(get("MONGODB_HOST"));
-		mongoConnectionInfo.setPort(get("MONGODB_PORT"));
-		mongoConnectionInfo.setAuthDatabase(get("MONGODB_AUTH_DATABASE"));
-		mongoConnectionInfo.setDatabase(get("MONGODB_DATABASE"));
-		mongoConnectionInfo.setJudgeCollection(get("MONGODB_JUDGE_COLLECTION"));
-	}
+        mongoConnectionInfo.setUsername(get("MONGODB_USERNAME"));
+        mongoConnectionInfo.setPassword(get("MONGODB_PASSWORD"));
+        mongoConnectionInfo.setHost(get("MONGODB_HOST"));
+        mongoConnectionInfo.setPort(get("MONGODB_PORT"));
+        mongoConnectionInfo.setAuthDatabase(get("MONGODB_AUTH_DATABASE"));
+        mongoConnectionInfo.setDatabase(get("MONGODB_DATABASE"));
+        mongoConnectionInfo.setJudgeCollection(get("MONGODB_JUDGE_COLLECTION"));
+    }
 
-	private void initArgumentInfo() {
+    private void initArgumentInfo() {
 
-		argumentInfo.setJudgeId(get("JUDGE_ID"));
-	}
+        argumentInfo.setJudgeId(get("JUDGE_ID"));
+    }
 
-	private String get(String key) {
+    private String get(String key) {
 
-		String value = System.getenv(key);
+        String value = System.getenv(key);
 
-		if (value == null) {
-			throw new RuntimeException("Environment variable %s is not set.".formatted(key));
-		}
+        if (value == null) {
+            throw new RuntimeException("Environment variable %s is not set.".formatted(key));
+        }
 
-		return value;
-	}
+        return value;
+    }
 
-	@Data
-	public static class MongoConnectionInfo {
-		private String username;
-		private String password;
-		private String host;
-		private String port;
-		private String authDatabase;
-		private String database;
-		private String judgeCollection;
-	}
+    @Data
+    public static class MongoConnectionInfo {
+        private String username;
+        private String password;
+        private String host;
+        private String port;
+        private String authDatabase;
+        private String database;
+        private String judgeCollection;
+    }
 
-	@Data
-	public static class ArgumentInfo {
-		private String judgeId;
-	}
+    @Data
+    public static class ArgumentInfo {
+        private String judgeId;
+    }
 
-	private static class LazyHolder {
-		private static final ProcessEnvironment INSTANCE = ProcessEnvironment.of();
-	}
+    private static class LazyHolder {
+        private static final ProcessEnvironment INSTANCE = ProcessEnvironment.of();
+    }
 }

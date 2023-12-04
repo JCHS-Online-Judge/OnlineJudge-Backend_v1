@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /*
- * 코드 스타일 재정렬
  * 대회용 랭킹  서비스
  * 수업 문제는 공통으로 뽑기
  * 채점 기록 모두 websocket으로

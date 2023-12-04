@@ -1,7 +1,6 @@
 package com.github.ioloolo.onlinejudge.domain.rank.data;
 
 import com.github.ioloolo.onlinejudge.domain.user.data.User;
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,7 @@ import lombok.Data;
 @Builder
 public class Rank {
 
-	private User user;
+    private User user;
 
-	private int solved;
+    private int solved;
 }

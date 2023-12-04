@@ -1,17 +1,15 @@
 package com.github.ioloolo.onlinejudge.domain.user.data;
 
-import java.util.List;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(of = "id")
@@ -19,22 +17,22 @@ import lombok.Singular;
 @Document
 public class User {
 
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-	private String username;
+    private String username;
 
-	@JsonIgnore
-	private String password;
+    @JsonIgnore
+    private String password;
 
-	private String name;
+    private String name;
 
-	@DBRef
-	@Singular
-	private List<Role> roles;
+    @DBRef
+    @Singular
+    private List<Role> roles;
 
-	public boolean isAdmin() {
+    public boolean isAdmin() {
 
-		return roles.stream().map(Role::getRole).anyMatch(role -> role.equals(Role.Roles.ROLE_ADMIN));
-	}
+        return roles.stream().map(Role::getRole).anyMatch(role -> role.equals(Role.Roles.ROLE_ADMIN));
+    }
 }

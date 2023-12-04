@@ -1,19 +1,7 @@
 package com.github.ioloolo.onlinejudge.common.security;
 
-import java.io.IOException;
-
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsServiceImpl;
 import com.github.ioloolo.onlinejudge.common.security.util.JwtUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -21,46 +9,59 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-	private final JwtUtil jwtUtil;
-	private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final JwtUtil jwtUtil;
 
-	@Override
-	protected void doFilterInternal(
-			@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain filterChain
-	) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(
+            @Nonnull HttpServletRequest request,
+            @Nonnull HttpServletResponse response,
+            @Nonnull FilterChain filterChain
+    ) throws ServletException, IOException {
 
-		String token = extract(request);
+        String token = extract(request);
 
-		if (jwtUtil.validate(token)) {
-			String username = jwtUtil.extract(token);
+        if (jwtUtil.validate(token)) {
+            String username = jwtUtil.extract(token);
 
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-			AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
-																								 null,
-																								 userDetails.getAuthorities()
-			);
-			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		}
+            WebAuthenticationDetails details = new WebAuthenticationDetailsSource().buildDetails(request);
 
-		filterChain.doFilter(request, response);
-	}
+            authentication.setDetails(details);
 
-	private String extract(HttpServletRequest request) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
 
-		String headerAuth = request.getHeader("Authorization");
+        filterChain.doFilter(request, response);
+    }
 
-		return StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ") ? headerAuth.substring(7) : null;
-	}
+    private String extract(HttpServletRequest request) {
 
-	public Filter getFilter() {
+        String headerAuth = request.getHeader("Authorization");
 
-		return this;
-	}
+        return StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ") ? headerAuth.substring(7) : null;
+    }
+
+    public Filter getFilter() {
+
+        return this;
+    }
 }

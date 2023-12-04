@@ -1,16 +1,15 @@
 package com.github.ioloolo.onlinejudge.domain.contest.repository;
 
-import java.util.Optional;
-
+import com.github.ioloolo.onlinejudge.domain.contest.data.Contest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.github.ioloolo.onlinejudge.domain.contest.data.Contest;
+import java.util.Optional;
 
 public interface ContestRepository extends MongoRepository<Contest, String> {
 
-	Optional<Contest> findByInviteCode(String inviteCode);
+    Optional<Contest> findByInviteCode(String inviteCode);
 
-	boolean existsByTitle(String title);
+    boolean existsByTitle(String title);
 
-	boolean existsByInviteCode(String inviteCode);
+    boolean existsByInviteCode(String inviteCode);
 }

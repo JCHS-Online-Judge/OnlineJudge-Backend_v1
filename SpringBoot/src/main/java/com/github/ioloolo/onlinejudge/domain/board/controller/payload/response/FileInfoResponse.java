@@ -1,13 +1,13 @@
 package com.github.ioloolo.onlinejudge.domain.board.controller.payload.response;
 
-import java.util.Map;
-
 import com.github.ioloolo.onlinejudge.common.payload.response.KVResponse;
+
+import java.util.Map;
 
 public class FileInfoResponse extends KVResponse {
 
-	public FileInfoResponse(String fileName) {
+    public FileInfoResponse(String fileName) {
 
-		super(false, Map.of("file", fileName));
-	}
+        super(false, Map.of("file", fileName));
+    }
 }

@@ -1,16 +1,15 @@
 package com.github.ioloolo.onlinejudge.domain.lecture.repository;
 
-import java.util.Optional;
-
+import com.github.ioloolo.onlinejudge.domain.lecture.data.Lecture;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.github.ioloolo.onlinejudge.domain.lecture.data.Lecture;
+import java.util.Optional;
 
 public interface LectureRepository extends MongoRepository<Lecture, String> {
 
-	Optional<Lecture> findByInviteCode(String inviteCode);
+    Optional<Lecture> findByInviteCode(String inviteCode);
 
-	boolean existsByTitle(String title);
+    boolean existsByTitle(String title);
 
-	boolean existsByInviteCode(String inviteCode);
+    boolean existsByInviteCode(String inviteCode);
 }

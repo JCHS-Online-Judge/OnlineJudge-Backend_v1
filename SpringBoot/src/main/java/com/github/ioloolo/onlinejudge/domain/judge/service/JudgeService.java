@@ -7,14 +7,10 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 import com.github.ioloolo.onlinejudge.common.exception.ExceptionFactory;
-import com.github.ioloolo.onlinejudge.domain.contest.data.Contest;
-import com.github.ioloolo.onlinejudge.domain.contest.repository.ContestRepository;
 import com.github.ioloolo.onlinejudge.domain.judge.data.JudgeHistory;
 import com.github.ioloolo.onlinejudge.domain.judge.data.JudgeLanguage;
 import com.github.ioloolo.onlinejudge.domain.judge.data.JudgeResult;
 import com.github.ioloolo.onlinejudge.domain.judge.repository.JudgeRepository;
-import com.github.ioloolo.onlinejudge.domain.lecture.data.Lecture;
-import com.github.ioloolo.onlinejudge.domain.lecture.repository.LectureRepository;
 import com.github.ioloolo.onlinejudge.domain.problem.data.Problem;
 import com.github.ioloolo.onlinejudge.domain.problem.repository.ProblemRepository;
 import com.github.ioloolo.onlinejudge.domain.user.data.User;
@@ -26,7 +22,6 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -37,8 +32,6 @@ public class JudgeService {
 
     private final JudgeRepository repository;
     private final ProblemRepository problemRepository;
-    private final LectureRepository lectureRepository;
-    private final ContestRepository contestRepository;
 
     private final ExecutorService executorService;
 
@@ -51,22 +44,16 @@ public class JudgeService {
             new ZerodepDockerHttpClient.Builder().dockerHost(URI.create("unix:///var/run/docker.sock"))
                     .build()
     );
-    
-    private final int AMOUNT_PER_PAGE = 25;
 
     public JudgeService(
             JudgeRepository repository,
             ProblemRepository problemRepository,
-            LectureRepository lectureRepository,
-            ContestRepository contestRepository,
             @Value("${app.judge.threadPoolSize}") int threadPoolSize,
             @Value("${app.judge.containerName}") String containerName
     ) {
 
         this.repository = repository;
         this.problemRepository = problemRepository;
-        this.lectureRepository = lectureRepository;
-        this.contestRepository = contestRepository;
 
         this.executorService = Executors.newFixedThreadPool(threadPoolSize);
 
@@ -152,129 +139,5 @@ public class JudgeService {
                 .build());
 
         return history;
-    }
-
-    public List<JudgeHistory> getHistory(int page, User user) {
-
-        return repository.findAll()
-                .stream()
-                .filter(history -> history.getProblem().isCommon())
-                .limit(AMOUNT_PER_PAGE)
-                .skip((long) page * AMOUNT_PER_PAGE)
-                .peek(history -> {
-                    if (!user.isAdmin() && !history.getUser().equals(user)) {
-                        Problem problem = history.getProblem();
-                        Problem.Simple simple = problem.toSimple();
-
-                        history.setSourceCode(null);
-                        history.setProblem(Problem.builder()
-                                .id(simple.getId())
-                                .problemNumber(simple.getProblemNumber())
-                                .title(simple.getTitle())
-                                .build());
-                    }
-                })
-                .toList();
-    }
-
-    public int getHistoryMaxPage() {
-
-        long count = repository.findAll().stream().filter(history -> history.getProblem().isCommon()).count();
-
-        return (int) Math.ceil((double) count / AMOUNT_PER_PAGE);
-    }
-
-    public List<JudgeHistory> getLectureHistory(String lectureId, int page, User user) throws Exception {
-
-        Optional<Lecture> lectureOptional = lectureRepository.findById(lectureId);
-        if (lectureOptional.isEmpty()) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.LECTURE_NOT_FOUND);
-        }
-        Lecture lecture = lectureOptional.get();
-
-        return repository.findAll()
-                .stream()
-                .filter(history -> history.getProblem().isLecture())
-                .filter(history -> history.getProblem().getLecture().equals(lecture))
-                .limit(AMOUNT_PER_PAGE)
-                .skip((long) page * AMOUNT_PER_PAGE)
-                .peek(history -> {
-                    if (!user.isAdmin() && !history.getUser().equals(user)) {
-                        Problem problem = history.getProblem();
-                        Problem.Simple simple = problem.toSimple();
-
-                        history.setSourceCode(null);
-                        history.setProblem(Problem.builder()
-                                .id(simple.getId())
-                                .problemNumber(simple.getProblemNumber())
-                                .title(simple.getTitle())
-                                .build());
-                    }
-                })
-                .toList();
-    }
-
-    public int getLectureHistoryMaxPage(String lectureId) throws Exception {
-
-        Optional<Lecture> lectureOptional = lectureRepository.findById(lectureId);
-        if (lectureOptional.isEmpty()) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.LECTURE_NOT_FOUND);
-        }
-        Lecture lecture = lectureOptional.get();
-
-        long count = repository.findAll()
-                .stream()
-                .filter(history -> history.getProblem().isLecture())
-                .filter(history -> history.getProblem().getLecture().equals(lecture))
-                .count();
-
-        return (int) Math.ceil((double) count / AMOUNT_PER_PAGE);
-    }
-
-    public List<JudgeHistory> getContestHistory(String contestId, int page, User user) throws Exception {
-
-        Optional<Contest> contestOptional = contestRepository.findById(contestId);
-        if (contestOptional.isEmpty()) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.CONTEST_NOT_FOUND);
-        }
-        Contest contest = contestOptional.get();
-
-        return repository.findAll()
-                .stream()
-                .filter(history -> history.getProblem().isContest())
-                .filter(history -> history.getProblem().getContest().equals(contest))
-                .limit(AMOUNT_PER_PAGE)
-                .skip((long) page * AMOUNT_PER_PAGE)
-                .peek(history -> {
-                    if (!user.isAdmin() && !history.getUser().equals(user)) {
-                        Problem problem = history.getProblem();
-                        Problem.Simple simple = problem.toSimple();
-
-                        history.setSourceCode(null);
-                        history.setProblem(Problem.builder()
-                                .id(simple.getId())
-                                .problemNumber(simple.getProblemNumber())
-                                .title(simple.getTitle())
-                                .build());
-                    }
-                })
-                .toList();
-    }
-
-    public int getContestHistoryMaxPage(String contestId) throws Exception {
-
-        Optional<Contest> contestOptional = contestRepository.findById(contestId);
-        if (contestOptional.isEmpty()) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.CONTEST_NOT_FOUND);
-        }
-        Contest contest = contestOptional.get();
-
-        long count = repository.findAll()
-                .stream()
-                .filter(history -> history.getProblem().isContest())
-                .filter(history -> history.getProblem().getContest().equals(contest))
-                .count();
-
-        return (int) Math.ceil((double) count / AMOUNT_PER_PAGE);
     }
 }

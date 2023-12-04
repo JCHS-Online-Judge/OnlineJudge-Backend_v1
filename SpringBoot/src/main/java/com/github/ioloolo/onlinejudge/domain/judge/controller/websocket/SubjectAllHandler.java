@@ -1,5 +1,6 @@
-package com.github.ioloolo.onlinejudge.domain.judge.websocket;
+package com.github.ioloolo.onlinejudge.domain.judge.controller.websocket;
 
+import com.github.ioloolo.onlinejudge.domain.judge.repository.JudgeRepository;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +12,14 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Getter
 @Component
 @RequiredArgsConstructor
-public class AllHandler extends TextWebSocketHandler {
+public class SubjectAllHandler extends TextWebSocketHandler {
 
-    private final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
+    private final JudgeRepository judgeRepository;
+
+    @Getter
+    private static final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
 
     @Override
     public void afterConnectionEstablished(@Nonnull WebSocketSession session) throws Exception {
@@ -25,9 +28,7 @@ public class AllHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(
-            @Nonnull WebSocketSession session, @Nonnull CloseStatus status
-    ) {
+    public void afterConnectionClosed(@Nonnull WebSocketSession session, @Nonnull CloseStatus status) throws Exception {
 
         sessions.remove(session);
     }

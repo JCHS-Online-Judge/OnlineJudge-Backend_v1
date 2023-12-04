@@ -32,7 +32,7 @@ public class ExceptionFactory {
 
         LECTURE_NOT_FOUND("존재하지 않는 수업입니다."),
         ALREADY_EXIST_LECTURE_PROBLEM("이미 존재하는 수업 문제입니다."),
-        NOT_EXIST_LECTURE_PROBLEM("존재하지 않는 수업 문제입니다."),
+        LECTURE_PROBLEM_NOT_EXIST("존재하지 않는 수업 문제입니다."),
 
         CONTEST_NOT_FOUND("존재하지 않는 대회입니다."),
         ALREADY_EXIST_CONTEST_TITLE("이미 존재하는 대회 제목입니다."),
@@ -42,6 +42,8 @@ public class ExceptionFactory {
         HISTORY_NOT_FOUND("존재하지 않는 채점 기록입니다."),
 
         CONTAINER_NOT_FOUND("채점 컨테이너가 존재하지 않습니다."),
+
+        INVALID_HEADER("잘못된 헤더입니다."),
         ;
 
         private final String message;

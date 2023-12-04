@@ -56,7 +56,7 @@ public class LectureProblemService {
         List<Problem> problems = lecture.getProblems();
 
         if (!problems.contains(problem)) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.NOT_EXIST_LECTURE_PROBLEM);
+            throw ExceptionFactory.of(ExceptionFactory.Type.LECTURE_PROBLEM_NOT_EXIST);
         }
 
         problems.remove(problem);

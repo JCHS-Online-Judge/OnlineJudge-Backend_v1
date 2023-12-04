@@ -44,10 +44,10 @@ public class ProblemService {
             List<Problem.TestCase> testCases
     ) throws Exception {
 
-        if (repository.existsByProblemNumberAndLectureAndContest(problemNumber, null, null)) {
+        if (repository.existsByProblemNumberAndContest(problemNumber, null)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_NUMBER_ALREADY_EXISTS);
         }
-        if (repository.existsByTitleAndLectureAndContest(title, null, null)) {
+        if (repository.existsByTitleAndContest(title, null)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_TITLE_ALREADY_EXISTS);
         }
 
@@ -79,10 +79,10 @@ public class ProblemService {
 
         Problem problem = OptionalParser.parse(repository.findById(problemId), ExceptionFactory.Type.PROBLEM_NOT_FOUND);
 
-        if (repository.existsByProblemNumberAndLectureAndContest(problemNumber, null, null)) {
+        if (repository.existsByProblemNumberAndContest(problemNumber, null)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_NUMBER_ALREADY_EXISTS);
         }
-        if (repository.existsByTitleAndLectureAndContest(title, null, null)) {
+        if (repository.existsByTitleAndContest(title, null)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_TITLE_ALREADY_EXISTS);
         }
 

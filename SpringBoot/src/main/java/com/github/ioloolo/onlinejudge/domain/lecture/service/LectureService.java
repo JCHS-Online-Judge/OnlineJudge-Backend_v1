@@ -45,7 +45,12 @@ public class LectureService {
             inviteCode = InviteCode.generate();
         } while (repository.existsByInviteCode(inviteCode));
 
-        Lecture lecture = Lecture.builder().title(title).content(content).inviteCode(inviteCode).build();
+        Lecture lecture = Lecture.builder()
+                .title(title)
+                .content(content)
+                .inviteCode(inviteCode)
+                .problems(List.of())
+                .build();
 
         repository.save(lecture);
     }

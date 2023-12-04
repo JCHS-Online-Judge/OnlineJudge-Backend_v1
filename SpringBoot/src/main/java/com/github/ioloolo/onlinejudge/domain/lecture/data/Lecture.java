@@ -1,6 +1,7 @@
 package com.github.ioloolo.onlinejudge.domain.lecture.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.ioloolo.onlinejudge.domain.problem.data.Problem;
 import com.github.ioloolo.onlinejudge.domain.user.data.User;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,11 @@ public class Lecture {
     private String content;
 
     private String inviteCode;
+
+    @JsonIgnore
+    @Singular
+    @DBRef
+    private List<Problem> problems;
 
     @JsonIgnore
     @Singular

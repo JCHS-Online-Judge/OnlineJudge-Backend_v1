@@ -65,10 +65,10 @@ public class ContestProblemService {
 
         Contest contest = OptionalParser.parse(contestRepository.findById(contestId), ExceptionFactory.Type.CONTEST_NOT_FOUND);
 
-        if (repository.existsByProblemNumberAndLectureAndContest(problemNumber, null, contest)) {
+        if (repository.existsByProblemNumberAndContest(problemNumber, contest)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_NUMBER_ALREADY_EXISTS);
         }
-        if (repository.existsByTitleAndLectureAndContest(title, null, contest)) {
+        if (repository.existsByTitleAndContest(title, contest)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_TITLE_ALREADY_EXISTS);
         }
 
@@ -103,10 +103,10 @@ public class ContestProblemService {
 
         Contest contest = problem.getContest();
 
-        if (repository.existsByProblemNumberAndLectureAndContest(problemNumber, null, contest)) {
+        if (repository.existsByProblemNumberAndContest(problemNumber, contest)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_NUMBER_ALREADY_EXISTS);
         }
-        if (repository.existsByTitleAndLectureAndContest(title, null, contest)) {
+        if (repository.existsByTitleAndContest(title, contest)) {
             throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_TITLE_ALREADY_EXISTS);
         }
 

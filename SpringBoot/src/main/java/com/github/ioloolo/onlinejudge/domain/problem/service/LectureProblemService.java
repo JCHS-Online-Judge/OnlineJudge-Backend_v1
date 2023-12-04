@@ -27,109 +27,40 @@ public class LectureProblemService {
             throw ExceptionFactory.of(ExceptionFactory.Type.UNAUTHORIZED);
         }
 
-        return repository.findAll()
-                .stream()
-                .filter(Problem::isLecture)
-                .filter(problem -> problem.getLecture().equals(lecture))
+        return lecture.getProblems().stream()
                 .map(Problem::toSimple)
                 .toList();
     }
 
-    public Problem getProblemInfo(String problemId, User user) throws Exception {
-
-        Problem problem = OptionalParser.parse(repository.findById(problemId), ExceptionFactory.Type.PROBLEM_NOT_FOUND);
-
-        if (!problem.isLecture()) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.BAD_REQUEST);
-        }
-        if (!user.isAdmin() && !problem.getLecture().getUsers().contains(user)) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.UNAUTHORIZED);
-        }
-
-        problem.setTestCases(problem.getTestCases().stream().filter(Problem.TestCase::isSample).toList());
-
-        return problem;
-    }
-
-    public void createProblem(
-            String lectureId,
-            String problemNumber,
-            String title,
-            String description,
-            String inputDescription,
-            String outputDescription,
-            long timeLimit,
-            long memoryLimit,
-            List<Problem.TestCase> testCases
-    ) throws Exception {
+    public void addProblem(String lectureId, String problemId) throws Exception {
 
         Lecture lecture = OptionalParser.parse(lectureRepository.findById(lectureId), ExceptionFactory.Type.LECTURE_NOT_FOUND);
-
-        if (repository.existsByProblemNumberAndLectureAndContest(problemNumber, lecture, null)) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_NUMBER_ALREADY_EXISTS);
-        }
-        if (repository.existsByTitleAndLectureAndContest(title, lecture, null)) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_TITLE_ALREADY_EXISTS);
-        }
-
-        Problem problem = Problem.builder()
-                .problemNumber(problemNumber)
-                .title(title)
-                .description(description)
-                .inputDescription(inputDescription)
-                .outputDescription(outputDescription)
-                .timeLimit(timeLimit)
-                .memoryLimit(memoryLimit)
-                .lecture(lecture)
-                .testCases(testCases)
-                .build();
-
-        repository.save(problem);
-    }
-
-    public void updateProblem(
-            String problemId,
-            String problemNumber,
-            String title,
-            String description,
-            String inputDescription,
-            String outputDescription,
-            long timeLimit,
-            long memoryLimit,
-            List<Problem.TestCase> testCases
-    ) throws Exception {
-
         Problem problem = OptionalParser.parse(repository.findById(problemId), ExceptionFactory.Type.PROBLEM_NOT_FOUND);
 
-        Lecture lecture = problem.getLecture();
+        List<Problem> problems = lecture.getProblems();
 
-        if (repository.existsByProblemNumberAndLectureAndContest(problemNumber, lecture, null)) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_NUMBER_ALREADY_EXISTS);
-        }
-        if (repository.existsByTitleAndLectureAndContest(title, lecture, null)) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.PROBLEM_TITLE_ALREADY_EXISTS);
+        if (problems.contains(problem)) {
+            throw ExceptionFactory.of(ExceptionFactory.Type.ALREADY_EXIST_LECTURE_PROBLEM);
         }
 
-        problem.setProblemNumber(problemNumber);
-        problem.setTitle(title);
-        problem.setDescription(description);
-        problem.setInputDescription(inputDescription);
-        problem.setOutputDescription(outputDescription);
-        problem.setTimeLimit(timeLimit);
-        problem.setMemoryLimit(memoryLimit);
-        problem.setTestCases(testCases);
+        problems.add(problem);
 
-        repository.save(problem);
+        lectureRepository.save(lecture);
     }
 
-    public void deleteProblem(String problemId) throws Exception {
+    public void deleteProblem(String lectureId, String problemId) throws Exception {
 
+        Lecture lecture = OptionalParser.parse(lectureRepository.findById(lectureId), ExceptionFactory.Type.LECTURE_NOT_FOUND);
         Problem problem = OptionalParser.parse(repository.findById(problemId), ExceptionFactory.Type.PROBLEM_NOT_FOUND);
 
-        if (!problem.isLecture()) {
-            throw ExceptionFactory.of(ExceptionFactory.Type.BAD_REQUEST);
+        List<Problem> problems = lecture.getProblems();
+
+        if (!problems.contains(problem)) {
+            throw ExceptionFactory.of(ExceptionFactory.Type.NOT_EXIST_LECTURE_PROBLEM);
         }
 
-        repository.delete(problem);
+        problems.remove(problem);
+
+        lectureRepository.save(lecture);
     }
 }

@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class DeleteProblemRequest {
+public class AddLectureProblemRequest {
+
+    @NotBlank(groups = NotBlankGroup.class, message = "수업 ID는 필수 입력값입니다.")
+    private String lectureId;
 
     @NotBlank(groups = NotBlankGroup.class, message = "문제 ID는 필수 입력값입니다.")
     private String problemId;

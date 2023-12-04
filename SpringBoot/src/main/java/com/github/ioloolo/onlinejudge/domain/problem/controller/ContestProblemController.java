@@ -109,7 +109,7 @@ public class ContestProblemController {
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteProblem(
-            @Validated(OrderChecks.class) @RequestBody DeleteProblemRequest request
+            @Validated(OrderChecks.class) @RequestBody RemoveLectureProblemRequest request
     ) throws Exception {
 
         String problemId = request.getProblemId();

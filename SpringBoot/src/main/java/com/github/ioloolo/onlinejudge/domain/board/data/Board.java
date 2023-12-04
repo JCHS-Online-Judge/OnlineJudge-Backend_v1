@@ -58,7 +58,13 @@ public class Board {
 
     public Simple toSimple() {
 
-        return Simple.builder().id(id).title(title).author(author).isNotice(isNotice).createdTime(createdTime).build();
+        return Simple.builder()
+                .id(id)
+                .title(title)
+                .author(author)
+                .isNotice(isNotice)
+                .createdTime(createdTime)
+                .build();
     }
 
     @Data

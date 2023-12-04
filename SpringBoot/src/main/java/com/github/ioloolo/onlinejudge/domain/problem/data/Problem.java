@@ -1,7 +1,6 @@
 package com.github.ioloolo.onlinejudge.domain.problem.data;
 
 import com.github.ioloolo.onlinejudge.domain.contest.data.Contest;
-import com.github.ioloolo.onlinejudge.domain.lecture.data.Lecture;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,31 +30,27 @@ public class Problem {
     private long memoryLimit;
 
     @DBRef
-    private Lecture lecture;
-
-    @DBRef
     private Contest contest;
 
     private List<TestCase> testCases;
 
     public boolean isCommon() {
 
-        return lecture == null && contest == null;
-    }
-
-    public boolean isLecture() {
-
-        return lecture != null && contest == null;
+        return contest == null;
     }
 
     public boolean isContest() {
 
-        return lecture == null && contest != null;
+        return contest != null;
     }
 
     public Simple toSimple() {
 
-        return Simple.builder().id(id).problemNumber(problemNumber).title(title).build();
+        return Simple.builder()
+                .id(id)
+                .problemNumber(problemNumber)
+                .title(title)
+                .build();
     }
 
     @Data

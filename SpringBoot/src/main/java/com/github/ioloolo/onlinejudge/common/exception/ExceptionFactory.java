@@ -31,6 +31,8 @@ public class ExceptionFactory {
         FILE_NOT_FOUND("존재하지 않는 파일입니다."),
 
         LECTURE_NOT_FOUND("존재하지 않는 수업입니다."),
+        ALREADY_EXIST_LECTURE_PROBLEM("이미 존재하는 수업 문제입니다."),
+        NOT_EXIST_LECTURE_PROBLEM("존재하지 않는 수업 문제입니다."),
 
         CONTEST_NOT_FOUND("존재하지 않는 대회입니다."),
         ALREADY_EXIST_CONTEST_TITLE("이미 존재하는 대회 제목입니다."),

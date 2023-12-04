@@ -2,11 +2,13 @@ package com.github.ioloolo.onlinejudge.domain.problem.controller;
 
 import com.github.ioloolo.onlinejudge.common.security.impl.UserDetailsImpl;
 import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
-import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.*;
-import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.response.ProblemInfoResponse;
+import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.AddLectureProblemRequest;
+import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.LectureProblemsRequest;
+import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.RemoveLectureProblemRequest;
 import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.response.ProblemListResponse;
 import com.github.ioloolo.onlinejudge.domain.problem.data.Problem;
 import com.github.ioloolo.onlinejudge.domain.problem.service.LectureProblemService;
+import com.github.ioloolo.onlinejudge.domain.user.data.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,91 +32,37 @@ public class LectureProblemController {
     ) throws Exception {
 
         String lectureId = request.getLectureId();
+        User user = userDetails.toUser();
 
-        return ResponseEntity.ok(new ProblemListResponse(service.getProblems(lectureId, userDetails.toUser())));
-    }
+        List<Problem.Simple> problems = service.getProblems(lectureId, user);
 
-    @PostMapping
-    public ResponseEntity<ProblemInfoResponse> getProblemInfo(
-            @Validated(OrderChecks.class) @RequestBody ProblemInfoRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) throws Exception {
-
-        return ResponseEntity.ok(new ProblemInfoResponse(service.getProblemInfo(request.getProblemId(),
-                userDetails.toUser()
-        )));
+        return ResponseEntity.ok(new ProblemListResponse(problems));
     }
 
     @PutMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> createProblem(
-            @Validated(OrderChecks.class) @RequestBody CreateLectureProblemRequest request
+    public ResponseEntity<Void> addProblem(
+            @Validated(OrderChecks.class) @RequestBody AddLectureProblemRequest request
     ) throws Exception {
 
         String lectureId = request.getLectureId();
-
-        String problemNumber = request.getProblemNumber();
-        String title = request.getTitle();
-        String description = request.getDescription();
-        String inputDescription = request.getInputDescription();
-        String outputDescription = request.getOutputDescription();
-        long timeLimit = request.getTimeLimit();
-        long memoryLimit = request.getMemoryLimit();
-        List<Problem.TestCase> testCases = request.getTestCases();
-
-        service.createProblem(lectureId,
-                problemNumber,
-                title,
-                description,
-                inputDescription,
-                outputDescription,
-                timeLimit,
-                memoryLimit,
-                testCases
-        );
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> updateProblem(
-            @Validated(OrderChecks.class) @RequestBody UpdateProblemRequest request
-    ) throws Exception {
-
         String problemId = request.getProblemId();
-        String problemNumber = request.getProblemNumber();
-        String title = request.getTitle();
-        String description = request.getDescription();
-        String inputDescription = request.getInputDescription();
-        String outputDescription = request.getOutputDescription();
-        long timeLimit = request.getTimeLimit();
-        long memoryLimit = request.getMemoryLimit();
-        List<Problem.TestCase> testCases = request.getTestCases();
 
-        service.updateProblem(problemId,
-                problemNumber,
-                title,
-                description,
-                inputDescription,
-                outputDescription,
-                timeLimit,
-                memoryLimit,
-                testCases
-        );
+        service.addProblem(lectureId, problemId);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteProblem(
-            @Validated(OrderChecks.class) @RequestBody DeleteProblemRequest request
+    public ResponseEntity<Void> removeProblem(
+            @Validated(OrderChecks.class) @RequestBody RemoveLectureProblemRequest request
     ) throws Exception {
 
+        String lectureId = request.getLectureId();
         String problemId = request.getProblemId();
 
-        service.deleteProblem(problemId);
+        service.deleteProblem(lectureId, problemId);
 
         return ResponseEntity.ok().build();
     }

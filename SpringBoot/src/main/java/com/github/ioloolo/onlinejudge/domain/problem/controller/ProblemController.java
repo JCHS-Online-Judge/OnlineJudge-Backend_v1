@@ -2,8 +2,8 @@ package com.github.ioloolo.onlinejudge.domain.problem.controller;
 
 import com.github.ioloolo.onlinejudge.common.validation.OrderChecks;
 import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.CreateProblemRequest;
-import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.DeleteProblemRequest;
 import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.ProblemInfoRequest;
+import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.RemoveLectureProblemRequest;
 import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.request.UpdateProblemRequest;
 import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.response.ProblemInfoResponse;
 import com.github.ioloolo.onlinejudge.domain.problem.controller.payload.response.ProblemListResponse;
@@ -107,7 +107,7 @@ public class ProblemController {
     @DeleteMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteProblem(
-            @Validated(OrderChecks.class) @RequestBody DeleteProblemRequest request
+            @Validated(OrderChecks.class) @RequestBody RemoveLectureProblemRequest request
     ) throws Exception {
 
         String problemId = request.getProblemId();

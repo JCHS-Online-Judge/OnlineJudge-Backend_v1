@@ -1,4 +1,4 @@
-package com.github.ioloolo.onlinejudge.domain.judge.controller.payload.request;
+package com.github.ioloolo.onlinejudge.domain.judge.controller.payload.request.history;
 
 import com.github.ioloolo.onlinejudge.common.validation.group.LengthGroup;
 import jakarta.validation.constraints.Min;

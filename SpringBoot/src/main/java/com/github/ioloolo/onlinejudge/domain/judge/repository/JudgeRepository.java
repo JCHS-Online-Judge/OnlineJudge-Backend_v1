@@ -10,4 +10,6 @@ import java.util.List;
 public interface JudgeRepository extends MongoRepository<JudgeHistory, String> {
 
     List<JudgeHistory> findAllByUserAndResult(User user, JudgeResult result);
+
+    List<JudgeHistory> findAllByOrderByCreatedTimeAsc();
 }

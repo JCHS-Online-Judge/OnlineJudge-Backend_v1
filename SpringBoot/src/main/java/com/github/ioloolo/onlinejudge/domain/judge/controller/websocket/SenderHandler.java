@@ -50,7 +50,7 @@ public class SenderHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@Nonnull WebSocketSession session, @Nonnull TextMessage message) throws Exception {
-        
+
         Map<String, Object> attributes = session.getAttributes();
         JudgeHistory history = (JudgeHistory) attributes.get(WebSocketCustomHeader.JUDGE);
 
@@ -62,8 +62,6 @@ public class SenderHandler extends TextWebSocketHandler {
 
         if (history.getProblem().isCommon()) {
             sendAll(SubjectAllHandler.getSessions(), history);
-        } else {
-            sendAll(SubjectContestHandler.getSessions().get(history.getProblem().getContest()), history);
         }
     }
 
